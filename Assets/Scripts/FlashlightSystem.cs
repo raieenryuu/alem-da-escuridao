@@ -51,6 +51,7 @@ public class FlashlightSystem : MonoBehaviour
             }
         }
     }
+    
 
     public void ToggleLight(bool state)
     {
