@@ -2018,11 +2018,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LightSensitiveEnemy
   playerTarget: {fileID: 0}
   patrolSpeed: 1.5
-  chaseSpeed: 3.5
-  fleeSpeed: 5
+  chaseSpeed: 7
+  fleeSpeed: 7
   chaseDistance: 50
-  fleeDistance: 5
+  fleeDistance: 50
   patrolRange: 500
+  attackDistance: 9
+  attackRate: 1.5
   maxHealth: 100
   damageRate: 20
   healthBarSlider: {fileID: 2276315662947751494}
