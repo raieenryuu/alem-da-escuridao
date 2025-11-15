@@ -82,4 +82,6 @@ public class FlashlightSystem : MonoBehaviour
             OnBatteryChanged?.Invoke(currentBattery / maxBattery); // Update UI
         }
     }
+    
+    public bool IsLightOn() { return isLightOn; }
 }

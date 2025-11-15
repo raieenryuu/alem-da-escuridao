@@ -20,22 +20,39 @@ public class LightSensitiveEnemy : MonoBehaviour
     public Transform playerTarget; // Assign the Player
 
     [Header("Stats")]
+    public float patrolSpeed = 1.5f; // --- NEW ---
+    public float chaseSpeed = 3.5f; // --- NEW ---
+    public float fleeSpeed = 5.0f; // --- NEW ---
     public float chaseDistance = 10f;
     public float fleeDistance = 15f; // How far to flee before stopping
+    public float patrolRange = 10f;
 
     [Header("Light Detection")]
     public float viewAngle = 30f; // Must match the flashlight's spot angle
     private FlashlightSystem playerFlashlight;
     private bool isLit = false;
 
+    // --- NEW ---
+    private Animator animator; // Reference to the Animator component
+    // --- END NEW ---
+
     // Simple patrol behavior
     private Vector3 patrolPoint;
     private float patrolTimer;
-    public float patrolRange = 10f;
+
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        
+        // --- NEW ---
+        // Get the Animator from the child object. This is more robust.
+        animator = GetComponentInChildren<Animator>(); 
+        if (animator == null)
+        {
+            Debug.LogError($"ENEMY ({name}): Could not find Animator component on self or children.");
+        }
+        // --- END NEW ---
 
         if (playerTarget == null)
         {
@@ -52,6 +69,7 @@ public class LightSensitiveEnemy : MonoBehaviour
         }
 
         currentState = State.Patrolling;
+        agent.speed = patrolSpeed; // --- NEW ---
         SetNewPatrolPoint();
     }
 
@@ -59,11 +77,19 @@ public class LightSensitiveEnemy : MonoBehaviour
     {
         if (playerTarget == null) return;
 
+        // --- NEW: Animation Update ---
+        // This is the magic line. It sends the agent's current speed to the Animator.
+        // .magnitude turns the (x,y,z) velocity into a single speed number.
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", agent.velocity.magnitude);
+        }
+        // --- END NEW ---
+
         // 1. Check if we are being lit
-        CheckIfLit();
+        CheckIfLit(); // <-- This is YOUR correct function
 
         // 2. Run the state machine
-        Debug.Log("Current state: " + currentState);
         switch (currentState)
         {
             case State.Patrolling:
@@ -72,10 +98,12 @@ public class LightSensitiveEnemy : MonoBehaviour
                 if (isLit)
                 {
                     currentState = State.Fleeing;
+                    agent.speed = fleeSpeed; // --- NEW ---
                 }
                 else if (Vector3.Distance(transform.position, playerTarget.position) <= chaseDistance)
                 {
                     currentState = State.Chasing;
+                    agent.speed = chaseSpeed; // --- NEW ---
                 }
                 break;
 
@@ -85,10 +113,12 @@ public class LightSensitiveEnemy : MonoBehaviour
                 if (isLit)
                 {
                     currentState = State.Fleeing;
+                    agent.speed = fleeSpeed; // --- NEW ---
                 }
                 else if (Vector3.Distance(transform.position, playerTarget.position) > chaseDistance)
                 {
                     currentState = State.Patrolling;
+                    agent.speed = patrolSpeed; // --- NEW ---
                 }
                 break;
 
@@ -98,26 +128,37 @@ public class LightSensitiveEnemy : MonoBehaviour
                 if (!isLit && Vector3.Distance(transform.position, agent.destination) < 1.0f)
                 {
                     currentState = State.Patrolling; // Cooldown / stop fleeing
+                    agent.speed = patrolSpeed; // --- NEW ---
                 }
                 break;
         }
     }
 
+    // This is YOUR CheckIfLit function, which is the correct one to use.
     void CheckIfLit()
     {
         // Add a safety check in case playerFlashlight was never found
-        if (playerFlashlight == null || !playerFlashlight.isLightOn)
+        // Use the public IsLightOn() function from FlashlightSystem.cs
+        if (playerFlashlight == null || !playerFlashlight.IsLightOn()) 
         {
             isLit = false;
             return;
         }
 
-        Light light = playerFlashlight.flashlight;
+        // We need to get the public 'flashlight' variable from the FlashlightSystem.
+        // Let's modify FlashlightSystem.cs to make 'flashlight' public.
+        // --- Assuming 'flashlight' variable in FlashlightSystem is public ---
+        Light light = playerFlashlight.flashlight; 
+        if (light == null)
+        {
+            isLit = false;
+            return; // No light component to check against
+        }
+
         Vector3 dirToEnemy = (transform.position - light.transform.position).normalized;
         float angleToEnemy = Vector3.Angle(light.transform.forward, dirToEnemy);
 
         // 1. Check if enemy is within the flashlight's cone angle
-        Debug.Log("Is withing cone?" + (angleToEnemy <= light.spotAngle / 2f));
         if (angleToEnemy <= light.spotAngle / 2f)
         {
             // 2. Raycast to see if the light is actually hitting the enemy (not blocked by a wall)
