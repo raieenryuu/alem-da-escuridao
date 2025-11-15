@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.AI; // Required for NavMeshAgent
+using UnityEngine.UI; // Required for the Slider
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class LightSensitiveEnemy : MonoBehaviour
 {
-    // Simple state machine for AI
     private enum State
     {
         Patrolling,
@@ -17,161 +17,169 @@ public class LightSensitiveEnemy : MonoBehaviour
     private NavMeshAgent agent;
 
     [Header("Targets")]
-    public Transform playerTarget; // Assign the Player
+    public Transform playerTarget; 
 
     [Header("Stats")]
-    public float patrolSpeed = 1.5f; // --- NEW ---
-    public float chaseSpeed = 3.5f; // --- NEW ---
-    public float fleeSpeed = 5.0f; // --- NEW ---
+    public float patrolSpeed = 1.5f; 
+    public float chaseSpeed = 3.5f; 
+    public float fleeSpeed = 5.0f; 
     public float chaseDistance = 10f;
-    public float fleeDistance = 15f; // How far to flee before stopping
+    public float fleeDistance = 15f; 
     public float patrolRange = 10f;
 
+    [Header("Health")]
+    public float maxHealth = 100f;
+    public float damageRate = 20f; 
+    public Slider healthBarSlider; 
+    private float currentHealth;
+    private bool isDead = false;
+
     [Header("Light Detection")]
-    public float viewAngle = 30f; // Must match the flashlight's spot angle
+    public float viewAngle = 30f; 
     private FlashlightSystem playerFlashlight;
     private bool isLit = false;
 
-    // --- NEW ---
-    private Animator animator; // Reference to the Animator component
-    // --- END NEW ---
-
-    // Simple patrol behavior
+    private Animator animator; 
+    private Collider enemyCollider; // Reference to collider for center-mass checks
+    
     private Vector3 patrolPoint;
     private float patrolTimer;
 
+    private void SetState(State newState)
+    {
+        if (currentState == newState) return; 
+
+        Debug.LogWarning($"ENEMY ({name}): State changing from {currentState} -> {newState}");
+        currentState = newState;
+
+        switch (newState)
+        {
+            case State.Patrolling:
+                agent.speed = patrolSpeed;
+                break;
+            case State.Chasing:
+                agent.speed = chaseSpeed;
+                break;
+            case State.Fleeing:
+                agent.speed = fleeSpeed;
+                break;
+        }
+    }
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        
-        // --- NEW ---
-        // Get the Animator from the child object. This is more robust.
         animator = GetComponentInChildren<Animator>(); 
-        if (animator == null)
-        {
-            Debug.LogError($"ENEMY ({name}): Could not find Animator component on self or children.");
-        }
+        
+        // --- NEW: Get the collider to find center mass ---
+        enemyCollider = GetComponent<Collider>();
+        if (enemyCollider == null) Debug.LogError($"ENEMY ({name}): No Collider found!");
         // --- END NEW ---
 
-        if (playerTarget == null)
+        currentHealth = maxHealth;
+        if (healthBarSlider != null)
         {
-            Debug.LogError($"ENEMY ({name}): Player Target not assigned! The enemy will not function.");
-        }
-        else
-        {
-            // GetComponentInChildren also checks the parent object (playerTarget) itself.
-            playerFlashlight = playerTarget.GetComponentInChildren<FlashlightSystem>();
-            if (playerFlashlight == null)
-            {
-                Debug.LogError($"ENEMY ({name}): Could not find 'FlashlightSystem' script on the Player! The enemy will not react to light.");
-            }
+            healthBarSlider.minValue = 0;
+            healthBarSlider.maxValue = 1; 
+            healthBarSlider.value = 1;
+            healthBarSlider.transform.parent.gameObject.SetActive(true);
         }
 
-        currentState = State.Patrolling;
-        agent.speed = patrolSpeed; // --- NEW ---
+        if (playerTarget != null)
+        {
+            playerFlashlight = playerTarget.GetComponentInChildren<FlashlightSystem>();
+        }
+
+        SetState(State.Patrolling);
         SetNewPatrolPoint();
     }
 
     void Update()
     {
-        if (playerTarget == null) return;
+        if (isDead || playerTarget == null) return;
 
-        // --- NEW: Animation Update ---
-        // This is the magic line. It sends the agent's current speed to the Animator.
-        // .magnitude turns the (x,y,z) velocity into a single speed number.
         if (animator != null)
         {
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
-        // --- END NEW ---
 
-        // 1. Check if we are being lit
-        CheckIfLit(); // <-- This is YOUR correct function
+        CheckIfLit(); 
 
-        // 2. Run the state machine
         switch (currentState)
         {
             case State.Patrolling:
                 Patrol();
-                // Check for transitions
                 if (isLit)
                 {
-                    currentState = State.Fleeing;
-                    agent.speed = fleeSpeed; // --- NEW ---
+                    SetState(State.Fleeing);
                 }
                 else if (Vector3.Distance(transform.position, playerTarget.position) <= chaseDistance)
                 {
-                    currentState = State.Chasing;
-                    agent.speed = chaseSpeed; // --- NEW ---
+                    SetState(State.Chasing);
                 }
                 break;
 
             case State.Chasing:
                 Chase();
-                // Check for transitions
                 if (isLit)
                 {
-                    currentState = State.Fleeing;
-                    agent.speed = fleeSpeed; // --- NEW ---
+                    SetState(State.Fleeing);
                 }
                 else if (Vector3.Distance(transform.position, playerTarget.position) > chaseDistance)
                 {
-                    currentState = State.Patrolling;
-                    agent.speed = patrolSpeed; // --- NEW ---
+                    SetState(State.Patrolling);
                 }
                 break;
 
             case State.Fleeing:
                 Flee();
-                // Check for transitions
-                if (!isLit && Vector3.Distance(transform.position, agent.destination) < 1.0f)
+                
+                // Velocity check (Robust against stopping distance bugs)
+                if (!isLit && !agent.pathPending) 
                 {
-                    currentState = State.Patrolling; // Cooldown / stop fleeing
-                    agent.speed = patrolSpeed; // --- NEW ---
+                    if (agent.hasPath) 
+                    {
+                        Debug.LogWarning($"ENEMY ({name}): Flee complete. Returning to patrol.");
+                        SetState(State.Patrolling);
+                    }
                 }
                 break;
         }
     }
 
-    // This is YOUR CheckIfLit function, which is the correct one to use.
     void CheckIfLit()
     {
-        // Add a safety check in case playerFlashlight was never found
-        // Use the public IsLightOn() function from FlashlightSystem.cs
-        if (playerFlashlight == null || !playerFlashlight.IsLightOn()) 
+        if (playerFlashlight == null || enemyCollider == null || !playerFlashlight.IsLightOn())
         {
             isLit = false;
             return;
         }
 
-        // We need to get the public 'flashlight' variable from the FlashlightSystem.
-        // Let's modify FlashlightSystem.cs to make 'flashlight' public.
-        // --- Assuming 'flashlight' variable in FlashlightSystem is public ---
         Light light = playerFlashlight.flashlight; 
         if (light == null)
         {
             isLit = false;
-            return; // No light component to check against
+            return; 
         }
 
-        Vector3 dirToEnemy = (transform.position - light.transform.position).normalized;
+        // --- FIX: Raycast from light to Enemy Center (Chest), not Pivot (Feet) ---
+        Vector3 rayOrigin = light.transform.position;
+        Vector3 targetPoint = enemyCollider.bounds.center; 
+        Vector3 dirToEnemy = (targetPoint - rayOrigin).normalized;
+        // --- END FIX ---
+
         float angleToEnemy = Vector3.Angle(light.transform.forward, dirToEnemy);
 
-        // 1. Check if enemy is within the flashlight's cone angle
         if (angleToEnemy <= light.spotAngle / 2f)
         {
-            // 2. Raycast to see if the light is actually hitting the enemy (not blocked by a wall)
-            float distanceToEnemy = Vector3.Distance(light.transform.position, transform.position);
-
-            if (Physics.Raycast(light.transform.position, dirToEnemy, out RaycastHit hit, light.range))
+            if (Physics.Raycast(rayOrigin, dirToEnemy, out RaycastHit hit, light.range))
             {
-                // Check if the raycast hit this enemy
-                if (hit.collider.gameObject == gameObject)
+                // Check if we hit this enemy OR any child parts
+                if (hit.collider.transform.root == this.transform)
                 {
+                    if (!isLit) Debug.Log($"ENEMY ({name}): Light is ON ME!"); 
                     isLit = true;
-                    // Optional: Apply damage
-                    // TakeDamage(1 * Time.deltaTime);
+                    TakeDamage(damageRate * Time.deltaTime);
                     return;
                 }
             }
@@ -180,14 +188,56 @@ public class LightSensitiveEnemy : MonoBehaviour
         isLit = false;
     }
 
+    void TakeDamage(float amount)
+    {
+        if (isDead) return;
+
+        currentHealth -= amount;
+        currentHealth = Mathf.Max(currentHealth, 0f); 
+
+        if (healthBarSlider != null)
+        {
+            healthBarSlider.value = currentHealth / maxHealth;
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        if (isDead) return;
+        
+        isDead = true;
+        Debug.LogWarning($"ENEMY ({name}): Has DIED!");
+
+        agent.isStopped = true;
+        this.enabled = false; 
+        GetComponent<Collider>().enabled = false;
+
+        if (animator != null)
+        {
+            animator.enabled = false; 
+        }
+
+        if (healthBarSlider != null)
+        {
+            healthBarSlider.transform.parent.gameObject.SetActive(false);
+        }
+        
+        Destroy(gameObject, 5f); 
+    }
+
     void Patrol()
     {
         agent.isStopped = false;
-        // Check if we've reached the patrol point
-        if (agent.remainingDistance < 0.5f)
+        
+        if (!agent.pathPending && agent.velocity.magnitude < 0.1f && agent.hasPath)
         {
             patrolTimer += Time.deltaTime;
-            // Wait for 3 seconds before finding new point
+            
             if (patrolTimer > 3f)
             {
                 SetNewPatrolPoint();
@@ -215,14 +265,20 @@ public class LightSensitiveEnemy : MonoBehaviour
     void Flee()
     {
         agent.isStopped = false;
-        // Calculate a point to run away from the player
-        Vector3 runDirection = transform.position - playerTarget.position;
-        Vector3 fleeTarget = transform.position + runDirection.normalized * fleeDistance;
+        
+        Vector3 runDirection = (transform.position - playerTarget.position).normalized;
+        Vector3 fleeTarget = transform.position + runDirection * fleeDistance;
 
-        // Only set a new flee destination if we're not already fleeing
-        if (agent.remainingDistance < 1.0f)
+        if (NavMesh.SamplePosition(fleeTarget, out NavMeshHit hit, fleeDistance, NavMesh.AllAreas))
         {
-            agent.SetDestination(fleeTarget);
+            if (Vector3.Distance(agent.destination, hit.position) > 1.5f)
+            {
+                agent.SetDestination(hit.position);
+            }
+        }
+        else
+        {
+            agent.SetDestination(transform.position - runDirection * 2f);
         }
     }
 }
