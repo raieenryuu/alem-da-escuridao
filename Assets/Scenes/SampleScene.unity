@@ -1927,8 +1927,16 @@ PrefabInstance:
       value: Alien
       objectReference: {fileID: 0}
     - target: {fileID: 6930222492748805052, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
+      propertyPath: fleeSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6930222492748805052, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
       propertyPath: chaseSpeed
-      value: 5
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6930222492748805052, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
+      propertyPath: fleeDistance
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6930222492748805052, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
       propertyPath: playerTarget
