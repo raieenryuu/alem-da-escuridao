@@ -9,7 +9,8 @@ public class LightSensitiveEnemy : MonoBehaviour
     {
         Patrolling,
         Chasing,
-        Fleeing
+        Fleeing,
+        Attacking // --- NEW STATE ---
     }
 
     [Header("AI")]
@@ -27,6 +28,11 @@ public class LightSensitiveEnemy : MonoBehaviour
     public float fleeDistance = 15f; 
     public float patrolRange = 10f;
 
+    [Header("Combat")]
+    public float attackDistance = 9.0f; // --- The agent will now stop at this distance ---
+    public float attackRate = 1.5f; 
+    private float nextAttackTime = 0f;
+
     [Header("Health")]
     public float maxHealth = 100f;
     public float damageRate = 20f; 
@@ -40,11 +46,12 @@ public class LightSensitiveEnemy : MonoBehaviour
     private bool isLit = false;
 
     private Animator animator; 
-    private Collider enemyCollider; // Reference to collider for center-mass checks
+    private Collider enemyCollider; 
     
     private Vector3 patrolPoint;
     private float patrolTimer;
 
+    // --- THIS FUNCTION IS THE FIX ---
     private void SetState(State newState)
     {
         if (currentState == newState) return; 
@@ -52,29 +59,42 @@ public class LightSensitiveEnemy : MonoBehaviour
         Debug.LogWarning($"ENEMY ({name}): State changing from {currentState} -> {newState}");
         currentState = newState;
 
+        // Stop agent before changing settings (safer)
+        agent.isStopped = true;
+
         switch (newState)
         {
             case State.Patrolling:
                 agent.speed = patrolSpeed;
+                agent.stoppingDistance = 0f; // Go all the way to patrol points
+                agent.isStopped = false; 
                 break;
             case State.Chasing:
                 agent.speed = chaseSpeed;
+                agent.stoppingDistance = attackDistance; // Tell the agent to stop at attack range
+                agent.isStopped = false; 
                 break;
             case State.Fleeing:
                 agent.speed = fleeSpeed;
+                agent.stoppingDistance = 0f; // Go all the way to flee points
+                agent.isStopped = false; 
+                break;
+            case State.Attacking:
+                agent.stoppingDistance = attackDistance; // Ensure it stays stopped at range
+                agent.isStopped = true; // Stop moving
+                agent.velocity = Vector3.zero; 
                 break;
         }
     }
+    // --- END FIX ---
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>(); 
         
-        // --- NEW: Get the collider to find center mass ---
         enemyCollider = GetComponent<Collider>();
         if (enemyCollider == null) Debug.LogError($"ENEMY ({name}): No Collider found!");
-        // --- END NEW ---
 
         currentHealth = maxHealth;
         if (healthBarSlider != null)
@@ -91,9 +111,11 @@ public class LightSensitiveEnemy : MonoBehaviour
         }
 
         SetState(State.Patrolling);
-        SetNewPatrolPoint();
+        // --- TYPO FIX from last context ---
+        SetNewPatrolPoint(); 
     }
 
+    // --- THIS FUNCTION IS UPDATED ---
     void Update()
     {
         if (isDead || playerTarget == null) return;
@@ -121,29 +143,79 @@ public class LightSensitiveEnemy : MonoBehaviour
 
             case State.Chasing:
                 Chase();
+                
+
+                Debug.Log("Distance from player before setting attacking state: " + Vector3.Distance(transform.position, playerTarget.position));
+                Debug.Log("Validated to: " + (Vector3.Distance(transform.position, playerTarget.position) <= attackDistance ));
+                
                 if (isLit)
                 {
                     SetState(State.Fleeing);
                 }
+                // --- FIX #1: Check distance directly, not velocity ---
+                // If we are close enough to attack, ATTACK. Don't wait to stop.
+                
+                else if (Vector3.Distance(transform.position, playerTarget.position) <= attackDistance)
+                {
+                    SetState(State.Attacking);
+                }
+                // --- END FIX #1 ---
                 else if (Vector3.Distance(transform.position, playerTarget.position) > chaseDistance)
                 {
                     SetState(State.Patrolling);
                 }
                 break;
 
+            case State.Attacking:
+                AttackBehavior();
+
+                if (isLit) 
+                {
+                    SetState(State.Fleeing);
+                }
+                // --- FIX #2: Add a "buffer" to stop jittering ---
+                // Only start chasing again if the player is *fully* out of attack range.
+                else if (Vector3.Distance(transform.position, playerTarget.position) > attackDistance + 0.5f) // 0.5f is the buffer
+                {
+                    SetState(State.Chasing);
+                }
+                // --- END FIX #2 ---
+                break;
+
             case State.Fleeing:
                 Flee();
                 
-                // Velocity check (Robust against stopping distance bugs)
                 if (!isLit && !agent.pathPending) 
                 {
                     if (agent.hasPath) 
                     {
-                        Debug.LogWarning($"ENEMY ({name}): Flee complete. Returning to patrol.");
                         SetState(State.Patrolling);
                     }
                 }
                 break;
+        }
+    }
+    // --- END UPDATE ---
+
+    void AttackBehavior()
+    {
+        // 1. Rotate to look at player (since agent is stopped)
+        Vector3 direction = (playerTarget.position - transform.position).normalized;
+        direction.y = 0; // Don't look up/down
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
+
+        // 2. Check cooldown
+        if (Time.time >= nextAttackTime)
+        {
+            if (animator != null)
+            {
+                animator.SetTrigger("Attack");
+            }
+            nextAttackTime = Time.time + attackRate;
         }
     }
 
@@ -162,19 +234,18 @@ public class LightSensitiveEnemy : MonoBehaviour
             return; 
         }
 
-        // --- FIX: Raycast from light to Enemy Center (Chest), not Pivot (Feet) ---
         Vector3 rayOrigin = light.transform.position;
         Vector3 targetPoint = enemyCollider.bounds.center; 
         Vector3 dirToEnemy = (targetPoint - rayOrigin).normalized;
-        // --- END FIX ---
 
         float angleToEnemy = Vector3.Angle(light.transform.forward, dirToEnemy);
 
-        if (angleToEnemy <= light.spotAngle / 2f)
+        // --- THIS IS THE FIX ---
+        if (angleToEnemy <= light.spotAngle / 2f) // Was 'fs'
+        // --- END FIX ---
         {
             if (Physics.Raycast(rayOrigin, dirToEnemy, out RaycastHit hit, light.range))
             {
-                // Check if we hit this enemy OR any child parts
                 if (hit.collider.transform.root == this.transform)
                 {
                     if (!isLit) Debug.Log($"ENEMY ({name}): Light is ON ME!"); 
@@ -213,71 +284,56 @@ public class LightSensitiveEnemy : MonoBehaviour
         isDead = true;
         Debug.LogWarning($"ENEMY ({name}): Has DIED!");
 
-        // --- THIS IS THE FIX ---
-        // 1. Capture the agent's current momentum (velocity) BEFORE we disable it.
         Vector3 momentumDirection = agent.velocity;
         
-        // 2. Stop all AI and Animation control
         if (agent != null)
         {
             agent.isStopped = true;
-            agent.enabled = false; // Disable the agent completely
+            agent.enabled = false; 
         }
         if (animator != null)
         {
-            animator.enabled = false; // Stop the animator from fighting physics
+            animator.enabled = false; 
         }
-        this.enabled = false; // Disable this script
+        this.enabled = false; 
 
-        // 3. Setup the "Stiff Ragdoll"
         Rigidbody rb = GetComponent<Rigidbody>();
         Collider col = GetComponent<Collider>(); 
 
         if (rb != null && col != null)
         {
-            rb.isKinematic = false; // Turn on physics
+            rb.isKinematic = false; 
             rb.useGravity = true;
-            rb.WakeUp(); // Tell physics to start working NOW
+            rb.WakeUp(); 
 
-            // 4. Check if we actually had any momentum
             Vector3 pushDir;
             if (momentumDirection.magnitude > 0.1f)
             {
-                // We were moving. Use that as the direction.
                 pushDir = momentumDirection.normalized;
                 Debug.Log($"Enemy died while moving. Pushing in direction {pushDir}");
             }
             else
             {
-                // We were standing still. Fall backwards as a fallback.
                 pushDir = -transform.forward;
                 Debug.Log($"Enemy died while still. Plling backwards.");
             }
 
-            // 5. Find a "chest" point to apply the force
             Vector3 chestPoint = col.bounds.center + new Vector3(0, col.bounds.extents.y * 0.75f, 0);
-
-            // Add a slight upward lift to help it topple over
             pushDir.y = 0.2f; 
 
-            // 6. Apply the force AT THAT CHEST POINT
             rb.AddForceAtPosition(pushDir.normalized * 10f, chestPoint, ForceMode.Impulse);
         }
 
-        // 7. Hide Health Bar
         if (healthBarSlider != null)
         {
             healthBarSlider.transform.parent.gameObject.SetActive(false);
         }
         
-        // 8. Cleanup
         Destroy(gameObject, 5f); 
     }
 
     void Patrol()
     {
-        agent.isStopped = false;
-        
         if (!agent.pathPending && agent.velocity.magnitude < 0.1f && agent.hasPath)
         {
             patrolTimer += Time.deltaTime;
@@ -297,19 +353,17 @@ public class LightSensitiveEnemy : MonoBehaviour
         {
             patrolPoint = hit.position;
             agent.SetDestination(patrolPoint);
+
         }
     }
 
     void Chase()
     {
-        agent.isStopped = false;
         agent.SetDestination(playerTarget.position);
     }
 
     void Flee()
     {
-        agent.isStopped = false;
-        
         Vector3 runDirection = (transform.position - playerTarget.position).normalized;
         Vector3 fleeTarget = transform.position + runDirection * fleeDistance;
 
