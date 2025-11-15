@@ -213,20 +213,64 @@ public class LightSensitiveEnemy : MonoBehaviour
         isDead = true;
         Debug.LogWarning($"ENEMY ({name}): Has DIED!");
 
-        agent.isStopped = true;
-        this.enabled = false; 
-        GetComponent<Collider>().enabled = false;
-
+        // --- THIS IS THE FIX ---
+        // 1. Capture the agent's current momentum (velocity) BEFORE we disable it.
+        Vector3 momentumDirection = agent.velocity;
+        
+        // 2. Stop all AI and Animation control
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.enabled = false; // Disable the agent completely
+        }
         if (animator != null)
         {
-            animator.enabled = false; 
+            animator.enabled = false; // Stop the animator from fighting physics
+        }
+        this.enabled = false; // Disable this script
+
+        // 3. Setup the "Stiff Ragdoll"
+        Rigidbody rb = GetComponent<Rigidbody>();
+        Collider col = GetComponent<Collider>(); 
+
+        if (rb != null && col != null)
+        {
+            rb.isKinematic = false; // Turn on physics
+            rb.useGravity = true;
+            rb.WakeUp(); // Tell physics to start working NOW
+
+            // 4. Check if we actually had any momentum
+            Vector3 pushDir;
+            if (momentumDirection.magnitude > 0.1f)
+            {
+                // We were moving. Use that as the direction.
+                pushDir = momentumDirection.normalized;
+                Debug.Log($"Enemy died while moving. Pushing in direction {pushDir}");
+            }
+            else
+            {
+                // We were standing still. Fall backwards as a fallback.
+                pushDir = -transform.forward;
+                Debug.Log($"Enemy died while still. Plling backwards.");
+            }
+
+            // 5. Find a "chest" point to apply the force
+            Vector3 chestPoint = col.bounds.center + new Vector3(0, col.bounds.extents.y * 0.75f, 0);
+
+            // Add a slight upward lift to help it topple over
+            pushDir.y = 0.2f; 
+
+            // 6. Apply the force AT THAT CHEST POINT
+            rb.AddForceAtPosition(pushDir.normalized * 10f, chestPoint, ForceMode.Impulse);
         }
 
+        // 7. Hide Health Bar
         if (healthBarSlider != null)
         {
             healthBarSlider.transform.parent.gameObject.SetActive(false);
         }
         
+        // 8. Cleanup
         Destroy(gameObject, 5f); 
     }
 
