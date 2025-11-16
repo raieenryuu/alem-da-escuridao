@@ -15,6 +15,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Aiming")]
     public LayerMask groundLayer; // Set this to your 'Ground' layer
 
+    [Header("Animation")]
+    public Animator anim;
+
     private Rigidbody rb;
     private Vector3 moveDirection;
 
@@ -31,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         ProcessInput();
+        HandleAnimations();
         Aim();
     }
 
@@ -64,6 +68,21 @@ public class PlayerMovement : MonoBehaviour
     {
         // Apply movement to the Rigidbody
         rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    void HandleAnimations()
+    {
+        if (anim == null) return;
+
+        // If the player is moving
+        if (moveDirection.sqrMagnitude > 0.01f)
+        {
+            anim.SetInteger("AnimationPar", 1);
+        }
+        else
+        {
+            anim.SetInteger("AnimationPar", 0);
+        }
     }
 
     void Aim()
