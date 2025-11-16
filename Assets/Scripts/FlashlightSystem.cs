@@ -48,6 +48,7 @@ public class FlashlightSystem : MonoBehaviour
             if (currentBattery <= 0)
             {
                 ToggleLight(false); // Force light off
+                GameManager.Instance.GameOver("Your flashlight ran out of energy!");
             }
         }
     }
