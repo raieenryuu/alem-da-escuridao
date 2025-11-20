@@ -123,7 +123,7 @@ MonoBehaviour:
   maxBattery: 100
   currentBattery: 100
   drainRate: 1.5
-  rechargeRate: 50
+  rechargeRate: 40
   toggleSound: {fileID: 0}
   OnBatteryChanged:
     m_PersistentCalls:

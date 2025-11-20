@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3424df23dab8d5f4eb31b5693bac738b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RechargeStation
+  StationLight: {fileID: 3429207592694274176}
 --- !u!65 &3753711543863584513
 BoxCollider:
   m_ObjectHideFlags: 0

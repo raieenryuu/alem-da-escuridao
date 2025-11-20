@@ -78,7 +78,7 @@ public class FlashlightSystem : MonoBehaviour
     {
         if (currentBattery < maxBattery)
         {
-            currentBattery += rechargeRate * Time.deltaTime;
+            currentBattery += rechargeRate;
             currentBattery = Mathf.Min(currentBattery, maxBattery); // Clamp at max
             OnBatteryChanged?.Invoke(currentBattery / maxBattery); // Update UI
         }

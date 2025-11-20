@@ -3,8 +3,14 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class RechargeStation : MonoBehaviour
 {
+    [Header("StationLight")] public Light StationLight;
+    
+    
     // This script assumes the collider is set to "Is Trigger"
     // It will recharge any player that stays within its trigger zone
+
+
+    private bool hasRecharge = true;
 
     void Start()
     {
@@ -19,10 +25,12 @@ public class RechargeStation : MonoBehaviour
         {
             // Find the flashlight system on the player
             FlashlightSystem flashlight = other.GetComponent<FlashlightSystem>();
-            if (flashlight != null)
+            if (flashlight != null && hasRecharge)
             {
                 // Call the recharge method
                 flashlight.Recharge();
+                hasRecharge = false;
+                this.StationLight.enabled = false;
             }
         }
     }
