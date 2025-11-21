@@ -2030,6 +2030,23 @@ MonoBehaviour:
   damageRate: 20
   healthBarSlider: {fileID: 2276315662947751494}
   viewAngle: 180
+  alienShriekSound: {fileID: 8300000, guid: 41d9e5fc3002b564083b1e6004f2bc48, type: 3}
+  footstepSounds:
+  - {fileID: 8300000, guid: eb71cbf41db972f4186f8a52c9ed403f, type: 3}
+  - {fileID: 8300000, guid: 67779b982bbe0c4439c4371341431a6c, type: 3}
+  - {fileID: 8300000, guid: f172c0f46ba1e854688f719cef1a3b6e, type: 3}
+  - {fileID: 8300000, guid: 8116246fcc5298d4ca6b073af4a7e72e, type: 3}
+  - {fileID: 8300000, guid: 80d16e42b1e9747438ed0f1863ea372b, type: 3}
+  footstepSpeed: 0.4
+  stepVolume: 0.7
+  chaseSounds:
+  - {fileID: 8300000, guid: 0b53dc7d8ba04124f837eeee7d0171c8, type: 3}
+  - {fileID: 8300000, guid: 88554771fa99e1a4091e3ba4b3ae1f90, type: 3}
+  - {fileID: 8300000, guid: 5020ebc2d5a4cde4691adebcfafe29d5, type: 3}
+  - {fileID: 8300000, guid: a6c81ed58e927b345bf3d80b35e9ee7d, type: 3}
+  - {fileID: 8300000, guid: 5020ebc2d5a4cde4691adebcfafe29d5, type: 3}
+  chaseSoundDelay: 5
+  chaseVolume: 1
 --- !u!54 &6303035732725009973
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2069,6 +2086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1026f719b34c98449b43392a6f806fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  damage: 1
 --- !u!1 &6308266509627482271
 GameObject:
   m_ObjectHideFlags: 0

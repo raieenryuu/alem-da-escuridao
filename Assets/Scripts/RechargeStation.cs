@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class RechargeStation : MonoBehaviour
 {
+    [SerializeField] public AudioClip rechargeSound;
+    
     [Header("StationLight")] public Light StationLight;
     
     
@@ -31,6 +33,7 @@ public class RechargeStation : MonoBehaviour
                 flashlight.Recharge();
                 hasRecharge = false;
                 this.StationLight.enabled = false;
+                SoundFXManager.instance.PlaySoundEffectClip(rechargeSound, transform, 0.2f);
             }
         }
     }

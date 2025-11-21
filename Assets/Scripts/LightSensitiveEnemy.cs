@@ -10,7 +10,7 @@ public class LightSensitiveEnemy : MonoBehaviour
         Patrolling,
         Chasing,
         Fleeing,
-        Attacking // --- NEW STATE ---
+        Attacking
     }
 
     [Header("AI")]
@@ -29,7 +29,7 @@ public class LightSensitiveEnemy : MonoBehaviour
     public float patrolRange = 10f;
 
     [Header("Combat")]
-    public float attackDistance = 9.0f; // --- The agent will now stop at this distance ---
+    public float attackDistance = 2.0f; // Changed back to reasonable default (2.0f) or keep your 9.0f if intentional
     public float attackRate = 1.5f; 
     private float nextAttackTime = 0f;
 
@@ -45,13 +45,28 @@ public class LightSensitiveEnemy : MonoBehaviour
     private FlashlightSystem playerFlashlight;
     private bool isLit = false;
 
+    [Header("Audio")]
+    [SerializeField] public AudioClip alienShriekSound;
+    // --- NEW: Footsteps ---
+    [SerializeField] private AudioClip[] footstepSounds; // Drag alien step sounds here
+    [SerializeField] private float footstepSpeed = 0.4f; // How fast they step
+    [SerializeField] private float stepVolume = 0.7f;
+    private float footstepTimer = 0;
+    // ----------------------
+    
+    
+    
+    [SerializeField] private AudioClip[] chaseSounds; // The sound to play while chasing (e.g., growl)
+    [SerializeField] private float chaseSoundDelay = 5.0f; // How often to play it (seconds)
+    [SerializeField] private float chaseVolume = 1.0f;
+    private float chaseSoundTimer = 0f;
+    
     private Animator animator; 
     private Collider enemyCollider; 
     
     private Vector3 patrolPoint;
     private float patrolTimer;
 
-    // --- THIS FUNCTION IS THE FIX ---
     private void SetState(State newState)
     {
         if (currentState == newState) return; 
@@ -66,27 +81,26 @@ public class LightSensitiveEnemy : MonoBehaviour
         {
             case State.Patrolling:
                 agent.speed = patrolSpeed;
-                agent.stoppingDistance = 0f; // Go all the way to patrol points
+                agent.stoppingDistance = 0f; 
                 agent.isStopped = false; 
                 break;
             case State.Chasing:
                 agent.speed = chaseSpeed;
-                agent.stoppingDistance = attackDistance; // Tell the agent to stop at attack range
+                agent.stoppingDistance = attackDistance; 
                 agent.isStopped = false; 
                 break;
             case State.Fleeing:
                 agent.speed = fleeSpeed;
-                agent.stoppingDistance = 0f; // Go all the way to flee points
+                agent.stoppingDistance = 0f; 
                 agent.isStopped = false; 
                 break;
             case State.Attacking:
-                agent.stoppingDistance = attackDistance; // Ensure it stays stopped at range
-                agent.isStopped = true; // Stop moving
+                agent.stoppingDistance = attackDistance; 
+                agent.isStopped = true; 
                 agent.velocity = Vector3.zero; 
                 break;
         }
     }
-    // --- END FIX ---
 
     void Start()
     {
@@ -111,11 +125,9 @@ public class LightSensitiveEnemy : MonoBehaviour
         }
 
         SetState(State.Patrolling);
-        // --- TYPO FIX from last context ---
         SetNewPatrolPoint(); 
     }
 
-    // --- THIS FUNCTION IS UPDATED ---
     void Update()
     {
         if (isDead || playerTarget == null) return;
@@ -126,6 +138,7 @@ public class LightSensitiveEnemy : MonoBehaviour
         }
 
         CheckIfLit(); 
+        HandleFootsteps(); // --- NEW: Call footsteps ---
 
         switch (currentState)
         {
@@ -144,22 +157,21 @@ public class LightSensitiveEnemy : MonoBehaviour
             case State.Chasing:
                 Chase();
                 
-
-                Debug.Log("Distance from player before setting attacking state: " + Vector3.Distance(transform.position, playerTarget.position));
-                Debug.Log("Validated to: " + (Vector3.Distance(transform.position, playerTarget.position) <= attackDistance ));
+                chaseSoundTimer -= Time.deltaTime;
+                if (chaseSoundTimer <= 0)
+                {
+                    SoundFXManager.instance.PlayRandomSoundEffectClip(chaseSounds, transform, chaseVolume);
+                    chaseSoundTimer = chaseSoundDelay + Random.Range(-0.5f, 0.5f);
+                }
                 
                 if (isLit)
                 {
                     SetState(State.Fleeing);
                 }
-                // --- FIX #1: Check distance directly, not velocity ---
-                // If we are close enough to attack, ATTACK. Don't wait to stop.
-                
                 else if (Vector3.Distance(transform.position, playerTarget.position) <= attackDistance)
                 {
                     SetState(State.Attacking);
                 }
-                // --- END FIX #1 ---
                 else if (Vector3.Distance(transform.position, playerTarget.position) > chaseDistance)
                 {
                     SetState(State.Patrolling);
@@ -173,13 +185,11 @@ public class LightSensitiveEnemy : MonoBehaviour
                 {
                     SetState(State.Fleeing);
                 }
-                // --- FIX #2: Add a "buffer" to stop jittering ---
-                // Only start chasing again if the player is *fully* out of attack range.
-                else if (Vector3.Distance(transform.position, playerTarget.position) > attackDistance + 0.5f) // 0.5f is the buffer
+                // Add buffer to stop jittering
+                else if (Vector3.Distance(transform.position, playerTarget.position) > attackDistance + 0.5f) 
                 {
                     SetState(State.Chasing);
                 }
-                // --- END FIX #2 ---
                 break;
 
             case State.Fleeing:
@@ -195,20 +205,42 @@ public class LightSensitiveEnemy : MonoBehaviour
                 break;
         }
     }
-    // --- END UPDATE ---
+
+    void HandleFootsteps()
+    {
+        // Check if agent is actually moving (velocity > 0.1)
+        if (agent.velocity.sqrMagnitude > 0.1f)
+        {
+            footstepTimer -= Time.deltaTime;
+
+            if (footstepTimer <= 0)
+            {
+                // Reset the timer
+                // Note: You could make footstepSpeed dependent on agent.speed for better realism!
+                footstepTimer = footstepSpeed;
+
+                
+                SoundFXManager.instance.PlayRandomSoundEffectClip(footstepSounds, transform, stepVolume);
+                
+            }
+        }
+        else
+        {
+            // Reset timer when stopped so the first step is instant
+            footstepTimer = 0;
+        }
+    }
 
     void AttackBehavior()
     {
-        // 1. Rotate to look at player (since agent is stopped)
         Vector3 direction = (playerTarget.position - transform.position).normalized;
-        direction.y = 0; // Don't look up/down
+        direction.y = 0; 
         if (direction != Vector3.zero)
         {
             Quaternion lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }
 
-        // 2. Check cooldown
         if (Time.time >= nextAttackTime)
         {
             if (animator != null)
@@ -240,9 +272,7 @@ public class LightSensitiveEnemy : MonoBehaviour
 
         float angleToEnemy = Vector3.Angle(light.transform.forward, dirToEnemy);
 
-        // --- THIS IS THE FIX ---
-        if (angleToEnemy <= light.spotAngle / 2f) // Was 'fs'
-        // --- END FIX ---
+        if (angleToEnemy <= light.spotAngle / 2f)
         {
             if (Physics.Raycast(rayOrigin, dirToEnemy, out RaycastHit hit, light.range))
             {
@@ -265,6 +295,10 @@ public class LightSensitiveEnemy : MonoBehaviour
 
         currentHealth -= amount;
         currentHealth = Mathf.Max(currentHealth, 0f); 
+        
+        // You might want to limit how often this shrieks so it doesn't spam every frame!
+        // For now, I'll comment it out or you can add a timer.
+        SoundFXManager.instance.PlaySoundEffectClip(alienShriekSound, transform, 0.25f);
 
         if (healthBarSlider != null)
         {
@@ -283,6 +317,12 @@ public class LightSensitiveEnemy : MonoBehaviour
         
         isDead = true;
         Debug.LogWarning($"ENEMY ({name}): Has DIED!");
+        
+        // Play death sound one last time
+        if (alienShriekSound != null && SoundFXManager.instance != null)
+        {
+            SoundFXManager.instance.PlaySoundEffectClip(alienShriekSound, transform, 0.5f);
+        }
 
         Vector3 momentumDirection = agent.velocity;
         
@@ -310,12 +350,10 @@ public class LightSensitiveEnemy : MonoBehaviour
             if (momentumDirection.magnitude > 0.1f)
             {
                 pushDir = momentumDirection.normalized;
-                Debug.Log($"Enemy died while moving. Pushing in direction {pushDir}");
             }
             else
             {
                 pushDir = -transform.forward;
-                Debug.Log($"Enemy died while still. Plling backwards.");
             }
 
             Vector3 chestPoint = col.bounds.center + new Vector3(0, col.bounds.extents.y * 0.75f, 0);

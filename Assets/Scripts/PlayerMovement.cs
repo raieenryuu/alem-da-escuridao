@@ -1,8 +1,6 @@
 using UnityEngine;
 
-// This script handles isometric player movement and aiming.
-// It assumes a Rigidbody for physics-based movement.
-
+// This script handles isometric player movement, aiming, animations, AND Footsteps
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -17,6 +15,12 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Animation")]
     public Animator anim;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip[] footstepsSounds; // Array! Drag multiple clips here
+    [SerializeField] private float footstepSpeed = 0.5f; // Seconds between steps
+    [SerializeField] private float stepVolume = 1f;
+    private float footstepTimer = 0;
 
     private Rigidbody rb;
     private Vector3 moveDirection;
@@ -36,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
         ProcessInput();
         HandleAnimations();
         Aim();
+        HandleFootsteps(); // <-- Added this back in
     }
 
     void FixedUpdate()
@@ -106,6 +111,29 @@ public class PlayerMovement : MonoBehaviour
                 // Smoothly rotate towards the target
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 15f * Time.deltaTime);
             }
+        }
+    }
+
+    void HandleFootsteps()
+    {
+        // Check if we are moving (using same threshold as animation)
+        if (moveDirection.sqrMagnitude > 0.01f)
+        {
+            footstepTimer -= Time.deltaTime;
+
+            if (footstepTimer <= 0)
+            {
+                // Reset the timer
+                footstepTimer = footstepSpeed;
+
+                    
+                SoundFXManager.instance.PlayRandomSoundEffectClip(footstepsSounds, transform, stepVolume);
+            }
+        }
+        else
+        {
+            // If we stop moving, reset the timer so the next step is immediate when we start again
+            footstepTimer = 0;
         }
     }
 }

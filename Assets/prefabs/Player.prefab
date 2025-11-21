@@ -106,6 +106,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   anim: {fileID: 2527099433592114092}
+  footstepsSounds:
+  - {fileID: 8300000, guid: eb71cbf41db972f4186f8a52c9ed403f, type: 3}
+  - {fileID: 8300000, guid: 67779b982bbe0c4439c4371341431a6c, type: 3}
+  - {fileID: 8300000, guid: f172c0f46ba1e854688f719cef1a3b6e, type: 3}
+  - {fileID: 8300000, guid: 8116246fcc5298d4ca6b073af4a7e72e, type: 3}
+  - {fileID: 8300000, guid: 80d16e42b1e9747438ed0f1863ea372b, type: 3}
+  footstepSpeed: 0.5
+  stepVolume: 1
 --- !u!114 &3760550014255922611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7b5cb07c9d1eb41b968ea2384c3065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightSystem
+  flashlightSound: {fileID: 8300000, guid: 2598854915d1f954fb3d5e34489944e4, type: 3}
   flashlight: {fileID: 7924808286816703014}
   isLightOn: 1
   maxBattery: 100
@@ -152,6 +161,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa97a4510b8cc7b40baac4458f26ee05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  deathSound: {fileID: 8300000, guid: 7fd0fb94702c72047aef31df2a0ab8ef, type: 3}
+  hurtSounds:
+  - {fileID: 8300000, guid: ce28a0fc880b71e4682bcbb61b887131, type: 3}
+  - {fileID: 8300000, guid: 34f1db8a97174a5458d6e671aaa346b4, type: 3}
+  - {fileID: 8300000, guid: 62b00b84a65ab2c4198b164bc514678f, type: 3}
+  - {fileID: 8300000, guid: 7d556ef0b46afa94bb3e83e2616872e9, type: 3}
+  hitSound: {fileID: 8300000, guid: d93c8732357ef5048b26862d16abcb47, type: 3}
   maxHealth: 3
   currentHealth: 0
   invulnerabilityTime: 2

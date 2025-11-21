@@ -2,6 +2,14 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
+
+    [SerializeField] public AudioClip deathSound;
+    [SerializeField] public AudioClip[] hurtSounds;
+    [SerializeField] public AudioClip hitSound;
+
+    
+    
+
     public int maxHealth = 3;
     public int currentHealth;
 
@@ -23,6 +31,8 @@ public class PlayerHealth : MonoBehaviour
         if (Time.time - lastDamageTime < invulnerabilityTime)
             return;
 
+        
+        SoundFXManager.instance.PlaySoundEffectClip(hitSound, transform, 1f);
         lastDamageTime = Time.time;
 
         currentHealth -= amount;
@@ -33,11 +43,16 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
+            return;
         }
+        
+        SoundFXManager.instance.PlayRandomSoundEffectClip(hurtSounds, transform, 1f);
+        
     }
 
     void Die()
     {
+        SoundFXManager.instance.PlaySoundEffectClip(deathSound, transform, 1f);
         GameManager.Instance.GameOver("You ran out of health!");
         gameObject.SetActive(false);
     }

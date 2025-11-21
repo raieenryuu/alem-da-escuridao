@@ -3,6 +3,10 @@ using UnityEngine.Events; // For potential UI events
 
 public class FlashlightSystem : MonoBehaviour
 {
+
+    [SerializeField] public AudioClip flashlightSound;
+    
+    
     [Header("Flashlight")]
     public Light flashlight; // Assign your Spot Light component here
     public bool isLightOn = true;
@@ -63,6 +67,8 @@ public class FlashlightSystem : MonoBehaviour
             flashlight.enabled = false;
             return;
         }
+        
+        SoundFXManager.instance.PlaySoundEffectClip(flashlightSound, transform, 1f);
 
         isLightOn = state;
         flashlight.enabled = isLightOn;
