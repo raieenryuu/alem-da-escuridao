@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 18137b9415951a538ab6c649b99fc4f1
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 218050
+  packageName: 2D Simple UI Pack
+  packageVersion: 1.0
+  assetPath: Assets/OArielG/2DSimpleUIPack/Examples/Animations/BlackContinueButton/BlackContinueButton.controller
+  uploadId: 493490
