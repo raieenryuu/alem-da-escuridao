@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::spawnerRandom
   obj:
-  - {fileID: 1574394406330428806, guid: 9f348923666f631d6ac2042ab5cf4fbb, type: 3}
-  - {fileID: 1574394406330428806, guid: 78a6c0a3ceb0c84d09f637a03efbde3f, type: 3}
-  - {fileID: 1574394406330428806, guid: 9270464ec0cb95de1ad1dca3d2579996, type: 3}
+  - {fileID: 1574394406330428806, guid: 6657faf4a892601478f6d6b940ef29da, type: 3}
+  - {fileID: 1574394406330428806, guid: 59aa2a9925a8899e1b7df79148867232, type: 3}
+  - {fileID: 1574394406330428806, guid: c25fe3d1beaa0fb829f69c1956362d5a, type: 3}
 --- !u!65 &2784911750729991870
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -65,7 +65,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
