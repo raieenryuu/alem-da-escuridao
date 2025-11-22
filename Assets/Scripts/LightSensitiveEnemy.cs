@@ -183,6 +183,7 @@ public class LightSensitiveEnemy : MonoBehaviour
                 {
                     SetState(State.Fleeing);
                 }
+                
                 else if (Vector3.Distance(transform.position, playerTarget.position) <= attackDistance)
                 {
                     SetState(State.Attacking);
