@@ -273,7 +273,7 @@ MonoBehaviour:
     \xE9 reativar o GERADOR PRINCIPAL e enviar um sinal de socorro antes que a nave
     se torne seu t\xFAmulo.\n\nApenas sua LANTERNA, com sua bateria limitada e preciosa,
     o separa das sombras. \xC9 sua arma, seu mapa e a contagem regressiva para a
-    sua sobreviv\xEAncia.\n\nQue a Luz o guie, astronauta.\n\nFIM"
+    sua sobreviv\xEAncia.\n\nQue a Luz o guie, astronauta."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
