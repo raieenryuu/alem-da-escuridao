@@ -67,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
     void ProcessInput()
     {
         float horizontal = Input.GetAxisRaw("Horizontal"); // A/D keys
-        float vertical = Input.GetAxisRaw("Vertical");
+        float vertical = Input.GetAxisRaw("Vertical");     // W/S keys
 
         Vector3 camForward = mainCamera.transform.forward;
         Vector3 camRight = mainCamera.transform.right;
@@ -84,17 +84,15 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        // Calculate the desired velocity vector
+        // Calculate the desired velocity vector for X and Z axes
         Vector3 targetVelocity = moveDirection * moveSpeed;
 
-        // CRUCIAL FIX: Retain the Rigidbody's current vertical velocity (y component)
-        // This prevents the player from sliding when there's no input and ensures
-        // full control over the y-axis, often used for jumping or gravity simulation.
-        // Since we set rb.useGravity = false, the y-velocity should stay 0.
-        targetVelocity.y = rb.linearVelocity.y;
+        // THE FIX: Instead of retaining the current Y velocity (which accumulates jitter),
+        // we explicitly set the Y velocity to zero. This halts any upward drift.
+        targetVelocity.y = 0f;
 
 
-        // ?? KEY CHANGE: Apply movement by setting the Rigidbody's velocity directly.
+        // KEY CHANGE: Apply movement by setting the Rigidbody's velocity directly.
         // The physics engine will handle collision resolution automatically.
         rb.linearVelocity = targetVelocity;
 

@@ -385,7 +385,6 @@ GameObject:
   - component: {fileID: 748048863}
   - component: {fileID: 748048862}
   - component: {fileID: 748048861}
-  - component: {fileID: 748048865}
   m_Layer: 0
   m_Name: ParedeBaixo
   m_TagString: Untagged
@@ -485,33 +484,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &748048865
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 748048860}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!1 &760989153 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 380129107001909155, guid: 1bb0813ab67ea2b46bb07722ec3e6e95, type: 3}
@@ -642,7 +614,6 @@ GameObject:
   - component: {fileID: 1000135508}
   - component: {fileID: 1000135507}
   - component: {fileID: 1000135506}
-  - component: {fileID: 1000135510}
   m_Layer: 0
   m_Name: ParedeLadoDir
   m_TagString: Untagged
@@ -742,33 +713,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &1000135510
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000135505}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!1 &1096998223
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,7 +857,6 @@ GameObject:
   - component: {fileID: 1128559204}
   - component: {fileID: 1128559203}
   - component: {fileID: 1128559202}
-  - component: {fileID: 1128559206}
   m_Layer: 0
   m_Name: ParedeLadoEsq
   m_TagString: Untagged
@@ -1013,33 +956,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &1128559206
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1128559201}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!114 &1236763229 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6808566297777765725, guid: 46595a57a08944e46a03c11a84dc0c40, type: 3}
@@ -1156,7 +1072,6 @@ GameObject:
   - component: {fileID: 1472963486}
   - component: {fileID: 1472963485}
   - component: {fileID: 1472963484}
-  - component: {fileID: 1472963488}
   m_Layer: 0
   m_Name: ParedeCima
   m_TagString: Untagged
@@ -1256,33 +1171,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &1472963488
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1472963483}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!114 &1504980982 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6839327085969581885, guid: 1bb0813ab67ea2b46bb07722ec3e6e95, type: 3}
@@ -1646,15 +1534,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 45.466167
+      value: 53.550484
       objectReference: {fileID: 0}
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 34.961773
+      value: 45.666313
       objectReference: {fileID: 0}
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 81.91163
+      value: 73.854034
       objectReference: {fileID: 0}
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1914,7 +1802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5969916912004149309, guid: 9e8ead89978222c4895aa5f5ad079473, type: 3}
       propertyPath: m_Constraints
-      value: 112
+      value: 116
       objectReference: {fileID: 0}
     - target: {fileID: 6639049231585130429, guid: 9e8ead89978222c4895aa5f5ad079473, type: 3}
       propertyPath: m_Name
