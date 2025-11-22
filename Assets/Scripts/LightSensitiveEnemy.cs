@@ -179,16 +179,23 @@ public class LightSensitiveEnemy : MonoBehaviour
                     chaseSoundTimer = chaseSoundDelay + Random.Range(-0.5f, 0.5f);
                 }
                 
+                float distance = Vector2.Distance(
+                    new Vector2(transform.position.x, transform.position.z), 
+                    new Vector2(playerTarget.position.x, playerTarget.position.z)
+                );
+                
+                Debug.Log($"Distance between player and alien {name}: {distance}");
+                
                 if (isLit)
                 {
                     SetState(State.Fleeing);
                 }
                 
-                else if (Vector3.Distance(transform.position, playerTarget.position) <= attackDistance)
+                else if ( distance <= attackDistance)
                 {
                     SetState(State.Attacking);
                 }
-                else if (Vector3.Distance(transform.position, playerTarget.position) > chaseDistance)
+                else if (distance > chaseDistance)
                 {
                     SetState(State.Patrolling);
                 }
