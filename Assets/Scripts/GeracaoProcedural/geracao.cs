@@ -10,6 +10,8 @@ public class geracao : MonoBehaviour
     [SerializeField]
     private GameObject salaFim;
 
+    [SerializeField]
+    private GameObject jogador;
     // MUDANÇA 1: Tamanho do array para 4x4 = 16 nodes.
     private Vector3[] node = new Vector3[16];
 
@@ -30,6 +32,7 @@ public class geracao : MonoBehaviour
         int rand = Random.Range(0, 4);
         transform.position = node[rand];
         Instantiate(salaInicio, transform.position, Quaternion.identity);
+        jogador.transform.position = new Vector3(transform.position.x, transform.position.y+10, transform.position.z);
         direcao = Random.Range(1, 7);
     }
 
