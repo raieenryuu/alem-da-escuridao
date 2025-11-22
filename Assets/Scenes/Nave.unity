@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 0
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 2d056ac30ecc9e542b26e06133f23602, type: 2}
+  m_SkyboxMaterial: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -980,9 +980,17 @@ PrefabInstance:
       value: Floor
       objectReference: {fileID: 0}
     - target: {fileID: 719673831569056433, guid: da382a4a29431e448b79b2b004a3e8b2, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 719673831569056433, guid: da382a4a29431e448b79b2b004a3e8b2, type: 3}
       propertyPath: m_NavMeshData
       value: 
       objectReference: {fileID: 23800000, guid: 9a27f7e71a500484d933bc6cb8dd6987, type: 2}
+    - target: {fileID: 5217730686316697831, guid: da382a4a29431e448b79b2b004a3e8b2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3ee081b49737b58a79a5b27461d8ecde, type: 2}
     - target: {fileID: 9132400347036687982, guid: da382a4a29431e448b79b2b004a3e8b2, type: 3}
       propertyPath: m_LocalScale.x
       value: 38.29458
@@ -1815,6 +1823,10 @@ PrefabInstance:
     - target: {fileID: 6639049231585130429, guid: 9e8ead89978222c4895aa5f5ad079473, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7924808286816703014, guid: 9e8ead89978222c4895aa5f5ad079473, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7962478336073902665, guid: 9e8ead89978222c4895aa5f5ad079473, type: 3}
       propertyPath: m_LocalPosition.x

@@ -175,6 +175,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 267737235725542274, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 267737235725542274, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 1574394406330428806, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
       propertyPath: m_Name
       value: SalaGerador Variant
@@ -186,6 +194,14 @@ PrefabInstance:
     - target: {fileID: 2277518212486916335, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
       propertyPath: m_LocalPosition.y
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686312761458665383, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686312761458665383, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 3710538194987441966, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
       propertyPath: m_LocalPosition.y
@@ -207,6 +223,22 @@ PrefabInstance:
       propertyPath: obj
       value: 
       objectReference: {fileID: 6198832631734881049, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
+    - target: {fileID: 8070088238808214446, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070088238808214446, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 9086936244656423090, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9086936244656423090, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
