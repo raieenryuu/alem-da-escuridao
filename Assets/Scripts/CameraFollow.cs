@@ -1,45 +1,54 @@
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour
+public class CameraProceduralFollow : MonoBehaviour
 {
     [Header("Target")]
-    public Transform target; // The player to follow
+    public Transform target;
 
     [Header("Settings")]
-    public float smoothSpeed = 0.125f; // How fast the camera follows (lower is slower)
-
-    private Vector3 offset;
-    private bool offsetCalculated = false;
-
-    void Start()
-    {
-        // We wait for the target to be set before calculating the offset
-    }
+    public float smoothSpeed = 0.125f;
+    
+    [Header("Positioning")]
+    // O quão longe a câmera está do player (hipotenusa)
+    public float cameraDistance = 20f; 
+    
+    // 90 = Totalmente de cima (Top Down), 45 = Isométrico, 0 = Chão
+    [Range(10f, 90f)] 
+    public float viewAngle = 60f; 
 
     void LateUpdate()
     {
-        if (target == null)
-        {
-            Debug.LogWarning("CameraFollow script has no target assigned.");
-            return;
-        }
+        if (target == null) return;
 
-        // Calculate the initial offset on the first frame a target is available
-        // This makes sure our camera's initial position in the Scene editor is respected
-        if (!offsetCalculated)
-        {
-            offset = transform.position - target.position;
-            offsetCalculated = true;
-        }
+        // Matemática para converter o ângulo e distância em posição X, Y, Z
+        // Converter ângulo para radianos
+        float angleRad = viewAngle * Mathf.Deg2Rad;
 
-        // The camera's desired position is the player's position + the original offset
-        Vector3 desiredPosition = target.position + offset;
+        // Calcular altura (Y) e recuo (Z) baseado no ângulo
+        float height = Mathf.Sin(angleRad) * cameraDistance;
+        float distanceBack = Mathf.Cos(angleRad) * cameraDistance;
 
-        // Use Lerp for a simple, smooth follow.
-        // For an instant, "hard-locked" follow, use this instead:
-        // transform.position = desiredPosition;
+        // Definir posição desejada
+        Vector3 desiredPosition = new Vector3(
+            target.position.x,
+            target.position.y + height,
+            target.position.z - distanceBack
+        );
 
+        // Suavizar movimento
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.position = smoothedPosition;
+
+        // Garantir que a câmera olhe para o jogador
+        transform.LookAt(target);
+    }
+
+    // Permite testar os sliders no editor sem dar Play
+    void OnValidate()
+    {
+        if (target != null)
+        {
+            LateUpdate();
+        }
     }
 }

@@ -8,10 +8,7 @@ public class spawner : MonoBehaviour
     void Start()
     {
         GameObject objeto = (GameObject)Instantiate(obj, transform.position, Quaternion.identity);
-        objeto.transform.parent = transform;
-        objeto.transform.localScale = new Vector3(0.04f, 1f, 0.04f);
+        objeto.transform.SetParent(transform, true);
     }
-
-    // Update is called once per frame
         
 }

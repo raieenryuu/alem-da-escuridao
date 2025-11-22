@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class geracao : MonoBehaviour
 {
-
     //[SerializeField]
     //private Transform[] posicoesIniciais;
     [SerializeField]
@@ -14,7 +13,8 @@ public class geracao : MonoBehaviour
     
     private Vector3[] node = new Vector3[65];
 
-    private float proxSala = 25;
+    // ALTERAÇÃO: A distância entre salas agora é 100 (tamanho da sala)
+    private float proxSala = 100; 
     private int direcao = 0;
     private int cont = 0;
     private bool gerando = true;
@@ -26,33 +26,36 @@ public class geracao : MonoBehaviour
        transform.position = new Vector3(0,0,0);
        salaLayer = 1 << salaLayer; 
        int rand = Random.Range(0, 4);
+       
+       // Precisamos garantir que o node esteja inicializado antes de usar
+       addNode(); 
+       
        transform.position = node[rand];
        Instantiate(salaInicio, transform.position, Quaternion.identity);
        //Instantiate(jogador, transform.position, Quaternion.identity);
        direcao = Random.Range(1, 7);
-
-       addNode();
-
     }
 
     private void addNode()
     {
        for (int i = 0; i < 65; i++)
         {
-          node[i] = new Vector3(-50 + (i%5)*25, 0, 0 + (i/5)*25);
-          //node[i].transform.position = no;
-          //Debug.Log("foi:" + i);
+          // ALTERAÇÃO: Ajuste da matemática do grid para escala 100.
+          // Antes: -50 (2 salas de 25 para esquerda). Agora: -200 (2 salas de 100 para esquerda).
+          node[i] = new Vector3(-200 + (i%5)*100, 0, 0 + (i/5)*100);
         }
-
-
     }
+
     private void prox()
     {
       int sala = 0;
       Vector3 novaPos = new Vector3(0, 0, 0);
+      
+      // Movimento para a Direita
       if(direcao == 1 || direcao == 2 || direcao == 3)
       {
-        if(transform.position.x < 50)
+        // ALTERAÇÃO: Limite X aumentado de 50 para 200
+        if(transform.position.x < 200) 
         {
           cont = 0;
           sala = Random.Range(0,4);
@@ -67,12 +70,13 @@ public class geracao : MonoBehaviour
         {
           direcao = 7;
         }
-
       }
+      
+      // Movimento para a Esquerda
       if (direcao == 4 || direcao == 5 || direcao == 6)
       {
-
-        if(transform.position.x > -50)
+        // ALTERAÇÃO: Limite X diminuído de -50 para -200
+        if(transform.position.x > -200)
         {
           cont = 0;
           sala = Random.Range(0,4);
@@ -84,64 +88,60 @@ public class geracao : MonoBehaviour
           direcao = 7;
         }
       }
+      
+      // Movimento para Frente
       if (direcao == 7)
       {
-        if(transform.position.z < 300)
+        // ALTERAÇÃO: Limite Z aumentado de 300 para 1200 (proporcional a 4x o tamanho)
+        if(transform.position.z < 1200)
         {
           cont++;
           sala = Random.Range(2, 4);
-          /*
-          if (sala == 2)
+
+          // Usei um raio um pouco maior (5) para garantir detecção na escala grande, 
+          // mas 1 funciona se a posição for exata.
+          Collider[] colliders = Physics.OverlapSphere(transform.position, 5, salaLayer);
+          
+          if(cont > 1)
           {
-            sala = 1;
-          }*/
-        // CORREÇÃO: Usar Physics.OverlapSphere para 3D em vez de Physics2D.OverlapCircle       
-                Collider[] colliders = Physics.OverlapSphere(transform.position, 1, salaLayer);
-                if(cont > 1)
+            if(colliders.Length > 0)
+            {
+                Collider detector = colliders[0];
+                tipoSala tipoScript = detector.GetComponent<tipoSala>();
+                if (tipoScript != null)
                 {
-                if(colliders.Length > 0)
+                  int tipo = tipoScript.getId();
+                  if (tipo != 3)
+                  {
+                    tipoScript.destruir();
+                    Instantiate(salas[3], transform.position, Quaternion.identity);
+                  }
+                }
+            }
+          }
+          else
+          {
+            if(colliders.Length > 0)
+            {
+                Collider detector = colliders[0];
+                tipoSala tipoScript = detector.GetComponent<tipoSala>();
+                
+                if(tipoScript != null)
                 {
-                    Collider detector = colliders[0];
-                    tipoSala tipoScript = detector.GetComponent<tipoSala>();
-                   // Debug.Log("colidiu com algo. Cont = " + cont);
-                    if (tipoScript != null)
+                    int tipo = tipoScript.getId();
+                    if(tipo != 1 && tipo != 3)
                     {
-                      int tipo = tipoScript.getId();
-                      if (tipo != 3)
-                      {
                         tipoScript.destruir();
-                        Instantiate(salas[3], transform.position, Quaternion.identity);
-                      }
-                    }
-                }
-                }
-                else
-                {
-                if(colliders.Length > 0)
-                {
-                    //Debug.Log("colidiu com algo");
-                    Collider detector = colliders[0];
-                    tipoSala tipoScript = detector.GetComponent<tipoSala>();
-                    
-                    if(tipoScript != null)
-                    {
-                        int tipo = tipoScript.getId();
-                        
-                        // CORREÇÃO: Mudar || para && na condição
-                        if(tipo != 1 && tipo != 3)
+                        int novaSala = Random.Range(1, 4);
+                        if(novaSala == 2)
                         {
-                            tipoScript.destruir();
-                            int novaSala = Random.Range(1, 4);
-                            if(novaSala == 2)
-                            {
-                                novaSala = 1;
-                            }
-                            // CORREÇÃO: Usar novaSala em vez de sala
-                            Instantiate(salas[novaSala], transform.position, Quaternion.identity);
+                            novaSala = 1;
                         }
+                        Instantiate(salas[novaSala], transform.position, Quaternion.identity);
                     }
                 }
-                }
+            }
+          }
                 
           novaPos = new Vector3(transform.position.x, transform.position.y, transform.position.z + proxSala);
           direcao = Random.Range(1, 7);
@@ -149,47 +149,41 @@ public class geracao : MonoBehaviour
         else
         {
           gerando = false;
-          Collider[] colliders = Physics.OverlapSphere(transform.position, 1, salaLayer);
+          Collider[] colliders = Physics.OverlapSphere(transform.position, 5, salaLayer);
           if(cont > 1)
           {
             if(colliders.Length > 0)
               {
                 Collider detector = colliders[0];
                 tipoSala tipoScript = detector.GetComponent<tipoSala>();
-                   // Debug.Log("colidiu com algo. Cont = " + cont);
                  if (tipoScript != null)
                     {
                         tipoScript.destruir();
                         Instantiate(salaFim, transform.position, Quaternion.identity);
                     }
                 }
-                }
+            }
           return;
         }
       }
 
-
       transform.position = novaPos;
       Instantiate(salas[sala], transform.position, Quaternion.identity);
-      
-//   direcao = Random.Range(1, 8);
     }
 
     // Update is called once per frame
     void Update()
     {
-      //if (tempo < 0f)
-      //{
       if (gerando)
       {
         prox(); 
       }
       else
       {
-
         foreach (var no in node)
         {
-          Collider[] colliders = Physics.OverlapSphere(no, 1, salaLayer);
+          // Aumentei raio de detecção para 5 por segurança na escala maior
+          Collider[] colliders = Physics.OverlapSphere(no, 5, salaLayer);
           
           if(colliders.Length == 0)
           {
@@ -199,10 +193,5 @@ public class geracao : MonoBehaviour
         }
         Destroy(this.gameObject);
       }
-      //}
-      //else
-      //{
-      // tempo -= Time.deltaTime;   
-      //}
     }
 }
