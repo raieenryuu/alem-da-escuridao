@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement; // Added for scene loading
 
 public class GameManager : MonoBehaviour
 {
@@ -29,6 +30,13 @@ public class GameManager : MonoBehaviour
         {
             this.TogglePause();
         }
+    }
+
+    public void StartGame()
+    {
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene("Nave");
     }
 
     public void GameOver(string reason)
