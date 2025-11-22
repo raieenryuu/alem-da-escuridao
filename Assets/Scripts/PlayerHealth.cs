@@ -53,7 +53,7 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         SoundFXManager.instance.PlaySoundEffectClip(deathSound, transform, 1f);
-        GameManager.Instance.GameOver("You ran out of health!");
+        GameManager.Instance.GameOver("Sua vida chegou a zero!");
         gameObject.SetActive(false);
     }
 }

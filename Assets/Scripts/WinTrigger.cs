@@ -6,7 +6,7 @@ public class WinTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameManager.Instance.GameWin("You activated the generator!");
+            GameManager.Instance.GameWin("O gerador foi ativado!");
         }
     }
 }
