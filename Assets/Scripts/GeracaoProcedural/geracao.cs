@@ -10,6 +10,10 @@ public class geracao : MonoBehaviour
     [SerializeField]
     private GameObject salaFim;
 
+    [Header("Player Settings")]
+    [Tooltip("Arraste o Transform do jogador para cá.")]
+    public Transform playerTransform; // 1. Campo para referenciar o jogador
+
     // MUDANÇA 1: Tamanho do array para 4x4 = 16 nodes.
     private Vector3[] node = new Vector3[16];
 
@@ -18,6 +22,9 @@ public class geracao : MonoBehaviour
     private int cont = 0;
     private bool gerando = true;
     private int salaLayer = 6;
+
+    // 2. Variável para armazenar a posição da sala inicial
+    private Vector3 initialRoomPosition;
 
     void Start()
     {
@@ -30,6 +37,10 @@ public class geracao : MonoBehaviour
         int rand = Random.Range(0, 4);
         transform.position = node[rand];
         Instantiate(salaInicio, transform.position, Quaternion.identity);
+
+        // 3. Armazena a posição da sala inicial
+        initialRoomPosition = transform.position;
+
         direcao = Random.Range(1, 7);
     }
 
@@ -155,6 +166,25 @@ public class geracao : MonoBehaviour
         Instantiate(salas[sala], transform.position, Quaternion.identity);
     }
 
+    // 4. Nova função para teleportar o jogador
+    private void TeleportPlayerToStart()
+    {
+        if (playerTransform != null)
+        {
+            // Teleporta o jogador para a posição da sala inicial
+            // FIX: Define a altura Y explicitamente para 10.73f (altitude desejada)
+            playerTransform.position = new Vector3(
+                initialRoomPosition.x,
+                10.73f, // Altura Y solicitada
+                initialRoomPosition.z
+            );
+        }
+        else
+        {
+            Debug.LogError("Player Transform não está atribuído no script geracao!");
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -196,6 +226,9 @@ public class geracao : MonoBehaviour
                 int novaSala = Random.Range(0, salas.Length);
                 Instantiate(salas[novaSala], no, Quaternion.identity);
             }
+
+            // 5. Teleporta o jogador ANTES de destruir o GameObject
+            TeleportPlayerToStart();
 
             // Finaliza o gerador
             Destroy(this.gameObject);
