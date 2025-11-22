@@ -142,7 +142,7 @@ PrefabInstance:
       objectReference: {fileID: 1236763229}
     - target: {fileID: 1775879888411794273, guid: 1bb0813ab67ea2b46bb07722ec3e6e95, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Quit
+      value: GoToMainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 2548259928365088530, guid: 1bb0813ab67ea2b46bb07722ec3e6e95, type: 3}
       propertyPath: m_Pivot.x
@@ -503,7 +503,7 @@ PrefabInstance:
       objectReference: {fileID: 1236763229}
     - target: {fileID: 1274601936738509072, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Quit
+      value: GoToMainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 3304615018876023101, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_Name
@@ -551,7 +551,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6487272057359555022, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 217.52277
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6487272057359555022, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_LocalRotation.w
@@ -571,11 +571,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6487272057359555022, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -28.97484
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6487272057359555022, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2.05285
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6487272057359555022, guid: 1a383bf9fac76824f8116f0b020b5afe, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1297,6 +1297,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7657054402148255314, guid: a03c28386ddec3d4b9dfadf999deeaf4, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: GoToMainMenu
+      objectReference: {fileID: 0}
     - target: {fileID: 8311047184051828915, guid: a03c28386ddec3d4b9dfadf999deeaf4, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1534,15 +1538,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 53.550484
+      value: 53.56784
       objectReference: {fileID: 0}
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 45.666313
+      value: 45.689297
       objectReference: {fileID: 0}
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 73.854034
+      value: 73.83674
       objectReference: {fileID: 0}
     - target: {fileID: 2447972977469834445, guid: 63ffe07d273c78149999ec71268f4d1b, type: 3}
       propertyPath: m_LocalRotation.w

@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
 
     private bool isPaused = false;
 
+    // NOTE: Ensure your Main Menu scene is set as Build Index 0
+    private const int MAIN_MENU_SCENE_INDEX = 0;
+
     void Awake()
     {
         Instance = this;
@@ -87,9 +90,19 @@ public class GameManager : MonoBehaviour
             pauseUI.SetActive(false);
     }
 
-    public void Quit()
+    // NEW FUNCTION: Quits the application entirely
+    public void GameQuit()
     {
         Application.Quit();
+        // NOTE: Application.Quit() only works in built executables. 
+        // In the Unity Editor, Debug.Log is often used as a confirmation.
+    }
+
+    // RENAMED FUNCTION: Navigates to the main menu scene (Build Index 0)
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f; // Ensure time is running before scene change
+        SceneManager.LoadScene(MAIN_MENU_SCENE_INDEX);
     }
 
     public void Restart()
