@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        // CHANGED: Load the new introductory scene first
         Time.timeScale = 1f;
-
-        SceneManager.LoadScene("Nave");
+        SceneManager.LoadScene("StarWarsIntro");
     }
 
     public void GameOver(string reason)
