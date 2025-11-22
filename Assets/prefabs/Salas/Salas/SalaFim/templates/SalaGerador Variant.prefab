@@ -179,6 +179,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: SalaGerador Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1730982406753415644, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: obj
+      value: 
+      objectReference: {fileID: 6198832631734881049, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
+    - target: {fileID: 2277518212486916335, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3710538194987441966, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3710538194987441966, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3810198359797515805, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: obj
+      value: 
+      objectReference: {fileID: 6198832631734881049, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
+    - target: {fileID: 4839630626022606170, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4951465369556671593, guid: a52322076ccb88c6cadfeabf2abbb356, type: 3}
+      propertyPath: obj
+      value: 
+      objectReference: {fileID: 6198832631734881049, guid: e7dd7721c9795ae49b49acb6e0f159f1, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
