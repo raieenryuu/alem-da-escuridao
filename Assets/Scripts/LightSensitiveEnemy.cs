@@ -105,27 +105,44 @@ public class LightSensitiveEnemy : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        animator = GetComponentInChildren<Animator>(); 
-        
+        animator = GetComponentInChildren<Animator>();
+
         enemyCollider = GetComponent<Collider>();
         if (enemyCollider == null) Debug.LogError($"ENEMY ({name}): No Collider found!");
+
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            playerTarget = playerObj.transform;
+            Debug.Log($"ENEMY ({name}): Player target found and set.");
+        }
+        else
+        {
+            Debug.LogError($"ENEMY ({name}): Player object with tag 'Player' not found in the scene!");
+        }
+        // ------------------------------------
 
         currentHealth = maxHealth;
         if (healthBarSlider != null)
         {
             healthBarSlider.minValue = 0;
-            healthBarSlider.maxValue = 1; 
+            healthBarSlider.maxValue = 1;
             healthBarSlider.value = 1;
             healthBarSlider.transform.parent.gameObject.SetActive(true);
         }
 
+        // The flashlight search must now rely on the found playerTarget
         if (playerTarget != null)
         {
             playerFlashlight = playerTarget.GetComponentInChildren<FlashlightSystem>();
+            if (playerFlashlight == null)
+            {
+                Debug.LogWarning($"ENEMY ({name}): No FlashlightSystem found in children of the Player target.");
+            }
         }
 
         SetState(State.Patrolling);
-        SetNewPatrolPoint(); 
+        SetNewPatrolPoint();
     }
 
     void Update()
@@ -391,6 +408,7 @@ public class LightSensitiveEnemy : MonoBehaviour
         {
             patrolPoint = hit.position;
             agent.SetDestination(patrolPoint);
+            Debug.Log($"[patrol] Estou indo para {patrolPoint}");
 
         }
     }
@@ -398,6 +416,7 @@ public class LightSensitiveEnemy : MonoBehaviour
     void Chase()
     {
         agent.SetDestination(playerTarget.position);
+        Debug.Log($"[chase] Estou indo para {playerTarget.position}");
     }
 
     void Flee()
