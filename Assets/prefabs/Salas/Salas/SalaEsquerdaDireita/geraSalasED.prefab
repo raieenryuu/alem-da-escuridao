@@ -48,6 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::spawnerRandom
   obj:
   - {fileID: 1574394406330428806, guid: c5bdfbb761d8469e594e4106967253ee, type: 3}
+  - {fileID: 1574394406330428806, guid: 0b562559c215e5ca79a9f52d349da205, type: 3}
+  - {fileID: 1574394406330428806, guid: 4a2e067667482431dab6c7d6f4ed470c, type: 3}
+  - {fileID: 1574394406330428806, guid: e2b5dfa28e163fb768896d4454bca87b, type: 3}
 --- !u!65 &2784911750729991870
 BoxCollider:
   m_ObjectHideFlags: 0
