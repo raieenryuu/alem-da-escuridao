@@ -120,7 +120,6 @@ public class LightSensitiveEnemy : MonoBehaviour
         {
             Debug.LogError($"ENEMY ({name}): Player object with tag 'Player' not found in the scene!");
         }
-        // ------------------------------------
 
         currentHealth = maxHealth;
         if (healthBarSlider != null)
@@ -131,7 +130,6 @@ public class LightSensitiveEnemy : MonoBehaviour
             healthBarSlider.transform.parent.gameObject.SetActive(true);
         }
 
-        // The flashlight search must now rely on the found playerTarget
         if (playerTarget != null)
         {
             playerFlashlight = playerTarget.GetComponentInChildren<FlashlightSystem>();
@@ -155,7 +153,7 @@ public class LightSensitiveEnemy : MonoBehaviour
         }
 
         CheckIfLit(); 
-        HandleFootsteps(); // --- NEW: Call footsteps ---
+        HandleFootsteps(); // 
 
         switch (currentState)
         {
@@ -276,30 +274,65 @@ public class LightSensitiveEnemy : MonoBehaviour
             return;
         }
 
-        Light light = playerFlashlight.flashlight; 
-        if (light == null)
+        Light light = playerFlashlight.flashlight;
+        if (light == null) { isLit = false; return; }
+
+        Vector3 rayOrigin = light.transform.position;
+        Vector3 targetPoint = enemyCollider.bounds.center;
+        Vector3 dirToEnemy = (targetPoint - rayOrigin).normalized;
+        float distToEnemy = Vector3.Distance(rayOrigin, targetPoint);
+
+        // 1. Quick Distance Check
+        if (distToEnemy > light.range) 
         {
-            isLit = false;
+            isLit = false; 
             return; 
         }
 
-        Vector3 rayOrigin = light.transform.position;
-        Vector3 targetPoint = enemyCollider.bounds.center; 
-        Vector3 dirToEnemy = (targetPoint - rayOrigin).normalized;
-
+        // 2. Angle Check
         float angleToEnemy = Vector3.Angle(light.transform.forward, dirToEnemy);
-
         if (angleToEnemy <= light.spotAngle / 2f)
         {
-            if (Physics.Raycast(rayOrigin, dirToEnemy, out RaycastHit hit, light.range))
+            // 3. RaycastAll - Get everything in the path
+            RaycastHit[] hits = Physics.RaycastAll(rayOrigin, dirToEnemy, light.range);
+
+            // We need to find the closest valid obstruction
+            float closestValidDist = float.MaxValue;
+            bool hitTheEnemy = false;
+
+            foreach (var hit in hits)
             {
-                if (hit.collider.transform.root == this.transform)
+                // FILTER: Ignore the Player (This fixes your issue!)
+                // We check if the hit object is the player or a child of the player
+                if (hit.transform.IsChildOf(playerTarget)) continue;
+                
+                // FILTER: Ignore Triggers (invisible zones)
+                if (hit.collider.isTrigger) continue;
+
+                // Logic: Find the closest thing that remains
+                if (hit.distance < closestValidDist)
                 {
-                    if (!isLit) Debug.Log($"ENEMY ({name}): Light is ON ME!"); 
-                    isLit = true;
-                    TakeDamage(damageRate * Time.deltaTime);
-                    return;
+                    closestValidDist = hit.distance;
+
+                    // Is this closest thing ME (the enemy)?
+                    if (hit.transform.IsChildOf(transform))
+                    {
+                        hitTheEnemy = true;
+                    }
+                    else
+                    {
+                        // It's a wall, a crate, or another enemy blocking the light
+                        hitTheEnemy = false;
+                    }
                 }
+            }
+
+            if (hitTheEnemy)
+            {
+                if (!isLit) Debug.Log($"ENEMY ({name}): Light is ON ME!");
+                isLit = true;
+                TakeDamage(damageRate * Time.deltaTime);
+                return;
             }
         }
 
@@ -331,60 +364,50 @@ public class LightSensitiveEnemy : MonoBehaviour
     void Die()
     {
         if (isDead) return;
-        
         isDead = true;
-        Debug.LogWarning($"ENEMY ({name}): Has DIED!");
-        
-        // Play death sound one last time
+
+        // Sound
         if (alienShriekSound != null && SoundFXManager.instance != null)
         {
             SoundFXManager.instance.PlaySoundEffectClip(alienShriekSound, transform, 0.5f);
         }
 
-        Vector3 momentumDirection = agent.velocity;
+        // Stop everything
+        if (agent != null) agent.enabled = false;
+        if (animator != null) animator.SetTrigger("Die"); // Optional: play anim if you have one
+        if (enemyCollider != null) enemyCollider.enabled = false;
         
-        if (agent != null)
+        // Turn off script
+        this.enabled = false;
+
+        // Start the burning effect
+        StartCoroutine(BurnAwayRoutine());
+    }
+
+    System.Collections.IEnumerator BurnAwayRoutine()
+    {
+        float duration = 1.0f;
+        float timer = 0f;
+        Vector3 originalScale = transform.localScale;
+
+        // Optional: If you have a MeshRenderer, you can change color here too
+        // Renderer ren = GetComponentInChildren<Renderer>();
+
+        while (timer < duration)
         {
-            agent.isStopped = true;
-            agent.enabled = false; 
-        }
-        if (animator != null)
-        {
-            animator.enabled = false; 
-        }
-        this.enabled = false; 
+            timer += Time.deltaTime;
+            float progress = timer / duration;
 
-        Rigidbody rb = GetComponent<Rigidbody>();
-        Collider col = GetComponent<Collider>(); 
+            // Interpolate from Original Scale to Zero
+            transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, progress);
 
-        if (rb != null && col != null)
-        {
-            rb.isKinematic = false; 
-            rb.useGravity = true;
-            rb.WakeUp(); 
+            // Optional: Spin them while shrinking (cartoon style)
+            // transform.Rotate(0, 360 * Time.deltaTime, 0);
 
-            Vector3 pushDir;
-            if (momentumDirection.magnitude > 0.1f)
-            {
-                pushDir = momentumDirection.normalized;
-            }
-            else
-            {
-                pushDir = -transform.forward;
-            }
-
-            Vector3 chestPoint = col.bounds.center + new Vector3(0, col.bounds.extents.y * 0.75f, 0);
-            pushDir.y = 0.2f; 
-
-            rb.AddForceAtPosition(pushDir.normalized * 10f, chestPoint, ForceMode.Impulse);
+            yield return null;
         }
 
-        if (healthBarSlider != null)
-        {
-            healthBarSlider.transform.parent.gameObject.SetActive(false);
-        }
-        
-        Destroy(gameObject, 5f); 
+        Destroy(gameObject);
     }
 
     void Patrol()

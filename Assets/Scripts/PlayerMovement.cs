@@ -153,7 +153,7 @@ public class PlayerMovement : MonoBehaviour
                 footstepTimer = footstepSpeed;
 
                 // This line assumes you have a static class called SoundFXManager with a method
-                // SoundFXManager.instance.PlayRandomSoundEffectClip(footstepsSounds, transform, stepVolume);
+                SoundFXManager.instance.PlayRandomSoundEffectClip(footstepsSounds, transform, stepVolume);
             }
         }
         else
