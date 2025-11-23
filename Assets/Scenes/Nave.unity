@@ -1351,6 +1351,10 @@ PrefabInstance:
       value: HealthAndEnergyUI
       objectReference: {fileID: 0}
     - target: {fileID: 1148278452219346737, guid: 3d1f44396feafcc43930c221b4ef7f28, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148278452219346737, guid: 3d1f44396feafcc43930c221b4ef7f28, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
